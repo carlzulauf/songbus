@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'dbus'
-require 'yaml'
 require 'ruby-web-search'
 require 'uri'
 require 'net/http'
