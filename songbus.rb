@@ -20,12 +20,8 @@ artist = song['artist']; title = song['title']
 puts "\n#{artist} - #{title}:\n\n"
 
 query = "\"#{artist}\" \"#{title}\" lyrics site:songmeanings.net"
-#puts query
-search = RubyWebSearch::Google.search(:query => query, :size => 1)
 
-#search.results.each do |result|
-#  puts result[:url]
-#end
+search = RubyWebSearch::Google.search(:query => query, :size => 1)
 
 if search.results.first.nil?
   puts "\n-- NO LYRICS FOUND --\n"
