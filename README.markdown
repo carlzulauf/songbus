@@ -11,8 +11,10 @@ ads.
 which is not currnetly available through rubygems.org. Install this gem first.
 
 Install instrucitons*:
+
     $ bundle install
 
 Usage:
+
     $ ruby songbus.rb
 
