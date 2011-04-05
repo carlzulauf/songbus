@@ -10,10 +10,6 @@ ads.
 *Depends on* `ruby-web-search` (https://github.com/mattetti/ruby-web-search)
 which is not currnetly available through rubygems.org. Install this gem first.
 
-*Current version (0.6.0) of* `ruby-dbus` contains a bug which prevents this
-script from getting detailed song info from Rhythmbox. Please install my fork
-of `ruby-dbus` found here: https://github.com/carlzulauf/ruby-dbus
-
 Install instrucitons*:
     $ bundle install
 

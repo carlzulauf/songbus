@@ -13,7 +13,7 @@ player_proxy = bus.introspect("org.gnome.Rhythmbox", "/org/gnome/Rhythmbox/Playe
 player = player_proxy["org.gnome.Rhythmbox.Player"]
 shell  = shell_proxy["org.gnome.Rhythmbox.Shell"]
 
-uri = player.getPlayingUri()
+uri = player.getPlayingUri()[0]
 song = shell.getSongProperties(uri)[0]
 artist = song['artist']; title = song['title']
 
@@ -26,6 +26,11 @@ if search.results.first.nil?
   puts "\n-- NO LYRICS FOUND --\n"
 else
   raw_html = Net::HTTP.get(URI(search.results.first[:url]))
-  puts raw_html.split("<!-- end ringtones -->")[1].split("<!--ringtones and media links -->")[0].split("<br />").join.strip
+  if raw_html.nil?
+    puts "\n-- UNABLE TO FETCH LYRICS FOR THIS SONG --\n"
+  else
+    puts raw_html.split("<!-- end ringtones -->")[1].split("<!--ringtones and media links -->")[0].split("<br />").join.strip
+    puts
+  end
 end
 
