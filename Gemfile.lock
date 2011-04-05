@@ -1,0 +1,22 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    columnize (0.3.1)
+    json (1.5.1)
+    linecache (0.43)
+    ruby-dbus (0.6.0)
+    ruby-debug (0.10.3)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.3.0)
+    ruby-debug-base (0.10.3)
+      linecache (>= 0.3)
+    ruby-web-search (0.0.2)
+      json
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ruby-dbus
+  ruby-debug
+  ruby-web-search
