@@ -17,14 +17,20 @@ uri = player.getPlayingUri()[0]
 song = shell.getSongProperties(uri)[0]
 artist = song['artist']; title = song['title']
 
-puts "\n#{artist} - #{title}:\n\n\n"
+puts "\n#{artist} - #{title}:\n\n"
 
-query = "#{artist} \"#{title}\" lyrics site:songmeanings.net"
-search = RubyWebSearch::Google.search(:query => query)
+query = "\"#{artist}\" \"#{title}\" lyrics site:songmeanings.net"
+#puts query
+search = RubyWebSearch::Google.search(:query => query, :size => 1)
+
+#search.results.each do |result|
+#  puts result[:url]
+#end
 
 if search.results.first.nil?
   puts "\n-- NO LYRICS FOUND --\n"
 else
+  puts "#{search.results.first[:url]}\n\n"
   raw_html = Net::HTTP.get(URI(search.results.first[:url]))
   if raw_html.nil?
     puts "\n-- UNABLE TO FETCH LYRICS FOR THIS SONG --\n"
