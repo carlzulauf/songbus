@@ -12,35 +12,49 @@ player_proxy = bus.introspect("org.gnome.Rhythmbox", "/org/gnome/Rhythmbox/Playe
 player = player_proxy["org.gnome.Rhythmbox.Player"]
 shell  = shell_proxy["org.gnome.Rhythmbox.Shell"]
 
-uri = player.getPlayingUri()[0]
-song = shell.getSongProperties(uri)[0]
-artist = song['artist']; title = song['title']
+def fetch_lyrics( player, shell )
+  uri = player.getPlayingUri()[0]
+  song = shell.getSongProperties(uri)[0]
+  artist = song['artist']; title = song['title']
 
-puts "\n#{artist} - #{title}:\n\n"
+  puts "\nCurrently playing: #{artist} - #{title}\n\n"
 
-query = "#{artist} \"#{title}\" lyrics site:songmeanings.net"
+  query = "#{artist} \"#{title}\" lyrics site:songmeanings.net"
 
-search = RubyWebSearch::Google.search(:query => query, :size => 10)
+  search = RubyWebSearch::Google.search(:query => query, :size => 10)
 
-lyrics_url = nil
-search.results.each do |result|
-  if result[:url] =~ /songmeanings\.net\/songs\/view\//
-    lyrics_url = result[:url]
-    break
+  lyrics_urls = []
+  search.results.each do |result|
+    lyrics_urls << result[:url] if result[:url] =~ /songmeanings\.net\/songs\/view\//
   end
+  lyrics_urls
 end
 
-if lyrics_url.nil?
-  puts "\n-- NO LYRICS FOUND --\n"
-  puts "You might find some at this URL: #{search.results.first[:url]}\n" unless search.results.first.nil?
-else
-  puts "#{lyrics_url}\n\n"
-  raw_html = Net::HTTP.get(URI(lyrics_url))
-  if raw_html.nil?
-    puts "\n-- UNABLE TO FETCH LYRICS FOR THIS SONG --\n"
+lyrics_urls = fetch_lyrics(player, shell)
+loop do
+  if lyrics_urls.empty?
+    puts "\n-- NO LYRICS FOUND --\n\n\n"
   else
-    puts raw_html.split("<!-- end ringtones -->")[1].split("<!--ringtones and media links -->")[0].split("<br />").join.strip
-    puts
+    current_url = lyrics_urls.shift
+    puts "#{current_url}\n\n"
+    raw_html = Net::HTTP.get(URI(current_url))
+    if raw_html.nil?
+      puts "\n-- UNABLE TO FETCH LYRICS FOR THIS SONG --\n"
+    else
+      puts raw_html.match(/<title>\s+SongMeanings \|\s+Lyrics \| ([\w\d -]+)\s+<\/title>/)[1].strip
+      puts
+      puts raw_html.match(/<!-- end ringtones -->(.+)<!--ringtones and media links -->/)[1].strip
+      puts
+    end
   end
+
+  puts "Commands: (r)efresh lyric, (n)ext lyric, new (s)ong, (q)uit"
+  STDOUT.flush
+  answer = gets.chomp
+
+  break                                       if answer =~ /^q/i
+  lyrics_urls.unshift current_url             if answer =~ /^r/i
+  lyrics_urls = fetch_lyrics( player, shell ) if answer =~ /^s/i
+
 end
 
